@@ -58,7 +58,7 @@ function signedQuery(action, parameters, date) {
   const keys = Object.keys(query).sort()
   const canonical = keys.map(key => `${percentEncode(key)}=${percentEncode(query[key])}`).join('&')
   const stringToSign = `POST&${percentEncode('/')}&${percentEncode(canonical)}`
-  query.Signature = oboard.crypto.hmacSha1(env.ACCESS_KEY_SECRET, stringToSign, { output: 'base64' })
+  query.Signature = oboard.crypto.hmacSha1(env.ACCESS_KEY_SECRET.withSuffix('&'), stringToSign, { output: 'base64' })
   return query
 }
 
