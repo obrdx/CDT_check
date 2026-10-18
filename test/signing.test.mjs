@@ -38,7 +38,13 @@ for (const scenario of [
             return createHmac('sha1', secret + key.suffix).update(data).digest('base64')
           },
         },
-        http: { request(value) { request = value; return { ok: true, json: {} } } },
+        http: { request(value) {
+          for (const [key, parameter] of Object.entries(value.query)) {
+            assert.equal(typeof parameter, 'string', `${key} must be a string for the OBoard HTTP gateway`)
+          }
+          request = value
+          return { ok: true, json: {} }
+        } },
       },
     })
     vm.runInContext(source, context)
@@ -47,7 +53,7 @@ for (const scenario of [
     assert.equal(request.method, 'POST')
     assert.equal(request.query.Version, scenario.version)
     assert.equal(request.query.Timestamp, '2026-10-18T08:25:44Z')
-    for (const [key, value] of Object.entries(scenario.parameters)) assert.equal(request.query[key], value)
+    for (const [key, value] of Object.entries(scenario.parameters)) assert.equal(request.query[key], String(value))
 
     // Reconstruct the server's canonical string from the transmitted parameters.
     const encoded = new URLSearchParams(Object.entries(request.query).filter(([key]) => key !== 'Signature'))

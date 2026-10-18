@@ -53,7 +53,7 @@ function signedQuery(action, parameters, date) {
     Version: action.indexOf('Cdt') >= 0 ? '2021-08-13' : '2014-05-26',
   }
   Object.keys(parameters || {}).forEach(key => {
-    if (parameters[key] !== undefined && parameters[key] !== null && parameters[key] !== '') query[key] = parameters[key]
+    if (parameters[key] !== undefined && parameters[key] !== null && parameters[key] !== '') query[key] = String(parameters[key])
   })
   const keys = Object.keys(query).sort()
   const canonical = keys.map(key => `${percentEncode(key)}=${percentEncode(query[key])}`).join('&')
